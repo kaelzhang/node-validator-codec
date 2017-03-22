@@ -14,7 +14,7 @@
 
 # validator-codec
 
-<!-- description -->
+Codec for validator presets
 
 ## Install
 
@@ -25,8 +25,32 @@ $ npm install validator-codec --save
 ## Usage
 
 ```js
-const validator_codec = require('validator-codec')
+const codec = require('validator-codec')
+const presets = {
+  username: v => v !== 'steve',
+  'min-length': (v, min) => v.length >= min,
+  'username-min-length': ['username', 'min-length:3']
+}
+
+codec('username', presets).every(validator => validator('steve'))  // false
+
+// 1. More than one rules split with `|`
+// 2. Rule name and arguments split with `:`
+codec('min-length:3|username')
 ```
+
+### codec(rule, presets [, list])
+
+Analysis the `rule` according to `presets`, and generates the array list of testers, or append to the existing `list`(if `list` argument is provided)
+
+- **list** `Array=[]` optional, defaults to `[]`
+- **presets** `Object`
+- **rule**
+  - `String` will be parsed according to `presets`,
+  - `function(v)` will be added to `list`
+  - `RegExp` will be transformed into a function
+
+Returns `Array.<function>`
 
 ## License
 
